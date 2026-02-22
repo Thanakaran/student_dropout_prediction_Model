@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────
+# docker-compose.yml - Student Dropout Predictor
+# ─────────────────────────────────────────────────────────────
+version: '3.8'
+
+services:
+  student-dropout-predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: student_dropout_predictor
+    ports:
+      - "8501:8501"
+    volumes:
+      # Persist model artifacts and plots outside the container
+      - ./plots:/app/plots
+      - ./xgboost_model.pkl:/app/xgboost_model.pkl
+      - ./label_encoder.pkl:/app/label_encoder.pkl
+      - ./feature_names.pkl:/app/feature_names.pkl
+      - ./top_features.pkl:/app/top_features.pkl
+    environment:
+      - PYTHONUNBUFFERED=1
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
