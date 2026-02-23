@@ -221,6 +221,28 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
+# AUTO-TRAIN IF MODEL ARTIFACTS ARE MISSING
+# (Runs automatically on first cloud deployment)
+# ─────────────────────────────────────────────
+import os
+import subprocess
+
+def ensure_model_artifacts():
+    """Train the model if pkl files are not present (e.g. fresh cloud deployment)."""
+    required = ['xgboost_model.pkl', 'label_encoder.pkl', 'feature_names.pkl', 'top_features.pkl']
+    if not all(os.path.exists(f) for f in required):
+        with st.spinner('⚙️ First-time setup: Training model... This takes about 60-90 seconds.'):
+            result = subprocess.run(
+                ['python', 'train_model.py'],
+                capture_output=True, text=True
+            )
+            if result.returncode != 0:
+                st.error(f'Model training failed:\n{result.stderr}')
+                st.stop()
+
+ensure_model_artifacts()
+
+# ─────────────────────────────────────────────
 # LOAD MODEL ARTIFACTS
 # ─────────────────────────────────────────────
 @st.cache_resource
@@ -228,6 +250,7 @@ def load_artifacts():
     model = joblib.load('xgboost_model.pkl')
     le = joblib.load('label_encoder.pkl')
     feature_names = joblib.load('feature_names.pkl')
+
     top_features = joblib.load('top_features.pkl')
     return model, le, feature_names, top_features
 
