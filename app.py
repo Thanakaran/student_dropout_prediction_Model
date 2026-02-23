@@ -71,10 +71,24 @@ st.markdown("""
         font-weight: 500 !important;
     }
 
-    /* Selectbox text inside the box */
+    /* ── Selectbox: selected value shown inside the closed box ── */
     .stSelectbox [data-baseweb="select"] div,
     .stSelectbox [data-baseweb="select"] span,
-    [data-baseweb="select"] div { color: white !important; }
+    .stSelectbox [data-baseweb="select"] input,
+    [data-baseweb="select"] div,
+    [data-baseweb="select"] span,
+    [data-baseweb="select"] input,
+    /* The single-value text label inside the box */
+    [data-baseweb="select"] [data-testid="stSelectValue"],
+    .stSelectbox div[data-testid="stMarkdownContainer"] p,
+    /* BaseWeb internal single value container */
+    [class*="single-value"],
+    [class*="singleValue"],
+    [class*="valueContainer"] span,
+    [class*="valueContainer"] div {
+        color: white !important;
+        background-color: transparent !important;
+    }
 
     /* Dropdown popup container */
     [data-baseweb="popover"],
