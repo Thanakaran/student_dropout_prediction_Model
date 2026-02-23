@@ -76,6 +76,43 @@ st.markdown("""
     .stSelectbox [data-baseweb="select"] span,
     [data-baseweb="select"] div { color: white !important; }
 
+    /* Dropdown popup container */
+    [data-baseweb="popover"],
+    [data-baseweb="menu"],
+    [role="listbox"],
+    ul[data-baseweb="menu"] {
+        background-color: #1e1b4b !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 8px !important;
+    }
+
+    /* Each dropdown option */
+    [role="option"],
+    li[role="option"],
+    [data-baseweb="menu"] li,
+    [data-baseweb="select"] li {
+        background-color: #1e1b4b !important;
+        color: white !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Hover state on dropdown option */
+    [role="option"]:hover,
+    li[role="option"]:hover,
+    [data-baseweb="menu"] li:hover {
+        background-color: #4c3a8c !important;
+        color: white !important;
+        cursor: pointer;
+    }
+
+    /* Selected option highlight */
+    [aria-selected="true"],
+    [role="option"][aria-selected="true"] {
+        background-color: #667eea !important;
+        color: white !important;
+    }
+
+
     /* Input field text (the value shown inside boxes) - dark grey */
     .stNumberInput input,
     .stTextInput input,
