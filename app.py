@@ -3,6 +3,9 @@ Student Dropout Prediction - Streamlit Web Application
 Model: XGBoost | Explainability: SHAP
 """
 
+import os
+import sys
+import runpy
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -224,21 +227,24 @@ st.markdown("""
 # AUTO-TRAIN IF MODEL ARTIFACTS ARE MISSING
 # (Runs automatically on first cloud deployment)
 # ─────────────────────────────────────────────
-import os
-import subprocess
-
 def ensure_model_artifacts():
-    """Train the model if pkl files are not present (e.g. fresh cloud deployment)."""
+    """Train the model inline if pkl files are not present."""
     required = ['xgboost_model.pkl', 'label_encoder.pkl', 'feature_names.pkl', 'top_features.pkl']
     if not all(os.path.exists(f) for f in required):
-        with st.spinner('⚙️ First-time setup: Training model... This takes about 60-90 seconds.'):
-            result = subprocess.run(
-                ['python', 'train_model.py'],
-                capture_output=True, text=True
-            )
-            if result.returncode != 0:
-                st.error(f'Model training failed:\n{result.stderr}')
+        os.makedirs('plots', exist_ok=True)
+        with st.spinner('First-time setup: Training the model (60-90 seconds)... Please wait.'):
+            try:
+                # Run train_model.py in the same Python process — no subprocess needed
+                runpy.run_path('train_model.py', run_name='__main__')
+            except SystemExit:
+                pass
+            except Exception as e:
+                st.error(f'Model training failed: {e}')
                 st.stop()
+        # Verify artifacts were created
+        if not all(os.path.exists(f) for f in required):
+            st.error('Training completed but model files were not saved. Please check train_model.py.')
+            st.stop()
 
 ensure_model_artifacts()
 
